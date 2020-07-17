@@ -18,7 +18,6 @@ Route::get('/', function () {
 });
 
 
-
 //REDIRECCIONA AL FORMULARIO DE CONSULTA DESDE UN INICIO
 
 // Route::get('/', function () {
@@ -35,7 +34,12 @@ Route::get('form_pruebas', 'PruebasController@form_pruebas');
 Route::get('log_conexiones', 'PruebasController@log_conexiones');
 
 // RUTAS DEL LADO DEL CLIENTE PARA SOLICITAR O GUARDAR INFORMACION
+Route::get('test_server', 'ClienteEncuestasController@test_server');
+Route::get('form_agregar_ip_server', 'ClienteEncuestasController@form_agregar_ip_server');
+Route::post('agregar_ip_server/{id}', 'ClienteEncuestasController@agregar_ip_server')->name('agregar_ip_server');
+
 Route::get('cliente_informacion_basica_datas', 'ClienteEncuestasController@cliente_informacion_basica_datas');
+Route::get('cliente_preparacion_datas', 'ClienteEncuestasController@cliente_preparacion_datas');
 Route::get('cliente_densidad_datas', 'ClienteEncuestasController@cliente_densidad_datas');
 Route::get('cliente_agroforestales_datas', 'ClienteEncuestasController@cliente_agroforestales_datas');
 Route::get('cliente_podas_datas', 'ClienteEncuestasController@cliente_podas_datas');
@@ -51,6 +55,7 @@ Route::get('cliente_deficiencias_datas', 'ClienteEncuestasController@cliente_def
 Route::get('cliente_cargar_datos', 'ClienteEncuestasController@cliente_cargar_datos');
 
 Route::get('cliente_informacion_basica_guardar', 'ClienteEncuestasController@cliente_informacion_basica_guardar');
+Route::get('cliente_preparacion_guardar', 'ClienteEncuestasController@cliente_preparacion_guardar');
 Route::get('cliente_densidad_guardar', 'ClienteEncuestasController@cliente_densidad_guardar');
 Route::get('cliente_agroforestales_guardar', 'ClienteEncuestasController@cliente_agroforestales_guardar');
 Route::get('cliente_podas_guardar', 'ClienteEncuestasController@cliente_podas_guardar');
@@ -68,6 +73,7 @@ Auth::routes();
 Route::group(["middleware" => "apikey.validate"], function () {
 
     Route::get('datas_informacion_basica', 'ApiEncuestasController@datas_informacion_basica');
+    Route::get('datas_preparacion', 'ApiEncuestasController@datas_preparacion');
     Route::get('datas_densidad', 'ApiEncuestasController@datas_densidad');
     Route::get('datas_agroforestales', 'ApiEncuestasController@datas_agroforestales');
     Route::get('datas_podas', 'ApiEncuestasController@datas_podas');
@@ -81,6 +87,7 @@ Route::group(["middleware" => "apikey.validate"], function () {
     Route::get('datas_deficiencias', 'ApiEncuestasController@datas_deficiencias');
 
     Route::post('servicio_informacion_basica_guardar', 'ApiEncuestasController@servicio_informacion_basica_guardar');
+    Route::post('servicio_preparacion_guardar', 'ApiEncuestasController@servicio_preparacion_guardar');
     Route::post('servicio_densidad_guardar', 'ApiEncuestasController@servicio_densidad_guardar');
     Route::post('servicio_agroforestales_guardar', 'ApiEncuestasController@servicio_agroforestales_guardar');
     Route::post('servicio_podas_guardar', 'ApiEncuestasController@servicio_podas_guardar');

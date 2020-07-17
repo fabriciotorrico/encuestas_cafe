@@ -16,6 +16,7 @@ use App\Models\Encuestas\InformacionBasica;
 use App\Models\Encuestas\Plaga;
 use App\Models\Encuestas\Poda;
 use App\Models\Encuestas\PostCosecha;
+use App\Models\Encuestas\Preparacion;
 use App\Models\Encuestas\Secado;
 
 class ApiEncuestasController extends Controller
@@ -23,6 +24,13 @@ class ApiEncuestasController extends Controller
 
     public function datas_informacion_basica(){
         $datas = InformacionBasica::orderBy('created_at', 'desc')->get();
+        $datas->makeHidden(['geom']);
+        // dd($datas[0]->geom);
+        return $datas;
+    }
+
+    public function datas_preparacion(){
+        $datas = Preparacion::orderBy('created_at', 'desc')->get();
         return $datas;
     }
 
@@ -75,6 +83,53 @@ class ApiEncuestasController extends Controller
     }
 
     public function servicio_informacion_basica_guardar(Request $request){
+        //Establecemos el tipo de cultipo id
+        $dato = \DB::table('enc_productores')->where('object_id', $request->object_id)->where('activo', 1)->first();
+
+        if ($dato == null) {
+            \DB::table('enc_productores')->insert([
+                ['object_id' => $request->object_id,
+                 'productor_nombres' => $request->productor_nombres,
+                 'productor_paterno' => $request->productor_paterno,
+                 'productor_materno' => $request->productor_materno,
+                 'productor_ci' => $request->productor_ci,
+                 'productor_sexo' => $request->productor_sexo,
+                 'productor_telefono' => $request->productor_telefono,
+                 'tecnico_responsable' => $request->tecnico_responsable,
+                 'id_departamento' => $request->id_departamento,
+                 'id_provincia' => $request->id_provincia,
+                 'id_municipio' => $request->id_municipio,
+                 'localidad' => $request->localidad,
+                 'comunidad' => $request->comunidad,
+                 'tipo_cultivo' => $request->tipo_cultivo,
+                 'tipo_cultivo_id' => $request->tipo_cultivo_id,
+                 'created_at' => $request->created_at,
+                 'updated_at' => $request->updated_at,
+                 'activo' => 1]
+            ]);
+        } else {
+            \DB::table('enc_productores')
+            ->where('object_id', $request->object_id)
+            ->where('activo', 1)
+            ->update([ 'productor_nombres' => $request->productor_nombres,
+                       'productor_paterno' => $request->productor_paterno,
+                       'productor_materno' => $request->productor_materno,
+                       'productor_ci' => $request->productor_ci,
+                       'productor_sexo' => $request->productor_sexo,
+                       'productor_telefono' => $request->productor_telefono,
+                       'tecnico_responsable' => $request->tecnico_responsable,
+                       'id_departamento' => $request->id_departamento,
+                       'id_provincia' => $request->id_provincia,
+                       'id_municipio' => $request->id_municipio,
+                       'localidad' => $request->localidad,
+                       'comunidad' => $request->comunidad,
+                       'tipo_cultivo' => $request->tipo_cultivo,
+                       'tipo_cultivo_id' => $request->tipo_cultivo_id,
+                       'updated_at' => $request->updated_at]);
+        }
+    }
+
+    public function servicio_preparacion_guardar(Request $request){
 
         \DB::table('enc_preparaciones')->insert([
             [

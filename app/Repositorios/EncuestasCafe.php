@@ -13,8 +13,10 @@ class EncuestasCafe
     public function __construct()
     {
         // $base_uri = 'http://encuestas.cafe.minculturas.com/public/';
-        $base_uri = 'http://encuestas_cafe_server.test:8080';
-      
+        $ip_servidor = \DB::table('enc_ip_servidor')->first();
+
+        $base_uri = 'http://' . $ip_servidor->ip . ':8080/encuestas_cafe_server/public/';
+        // dd($base_uri);
         $this->client = new Client([
             // Base URI is used with relative requests
             'base_uri' => $base_uri,
@@ -26,10 +28,11 @@ class EncuestasCafe
     }
 
     public function test_server(){
-        $url = 'datas_informacion_basica';
-
+        $url = '';
+        
         try {
-            $response = $this->client->request('GET', '/', array(
+            $response = $this->client->request('GET', $url, array(
+           'timeout' => 3.14, // Si el servidor no devuelve una respuesta en 3.14 segundos.
            'headers' => null,
            'body' => null
             ));

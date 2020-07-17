@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Illuminate\Support\Facades\Auth;
 use App\Repositorios\EncuestasCafe;
+
 
 class ClienteEncuestasController extends Controller
 {
@@ -16,8 +17,32 @@ class ClienteEncuestasController extends Controller
         $this->encuestas = $encuestas;
     }
 
+    public function test_server(){
+        return $this->encuestas->test_server();
+    }
+
+    public function form_agregar_ip_server(){
+        $dato = \DB::table('enc_ip_servidor')->orderBy('id_ip_servidor', 'asc')->first();
+        return view('formularios.encuestas.form_agregar_ip_server', compact('dato'));
+    }
+
+    public function agregar_ip_server(Request $request, $id){
+        $dato = \DB::table('enc_ip_servidor')->where('id_ip_servidor', $id)->first();
+        if($dato == null){
+            \DB::table('enc_ip_servidor')->insert(['ip' => $request->ip]);
+        }else{
+            \DB::table('enc_ip_servidor')->where('id_ip_servidor', $id)->update(['ip' => $request->ip]);
+        }
+         return redirect('/home_encuestas')->with('mensaje_exito', 'IP del servidor Actualizado Exitosamente');
+      }
+
     public function cliente_informacion_basica_datas(){
         $url = 'datas_informacion_basica';
+        return $this->encuestas->datas($url);
+    }
+
+    public function cliente_preparacion_datas(){
+        $url = 'datas_preparacion';
         return $this->encuestas->datas($url);
     }
 
@@ -80,6 +105,7 @@ class ClienteEncuestasController extends Controller
         // dd($this->encuestas->test_server());
         if($this->encuestas->test_server()){
             $this->cliente_informacion_basica_guardar();
+            $this->cliente_preparacion_guardar();
             $this->cliente_densidad_guardar();
             $this->cliente_agroforestales_guardar();
             $this->cliente_podas_guardar();
@@ -93,12 +119,49 @@ class ClienteEncuestasController extends Controller
             $this->cliente_deficiencias_guardar();
             return redirect('/home_encuestas')->with('mensaje_exito', 'Registros cargados al servidor Exitosamente');
         }else{
-            return redirect('/home_encuestas')->with('mensaje_error', 'El servidor no esta disponible, revise su conexión');
+            // return redirect('/home_encuestas')->with('mensaje_error', 'El servidor no esta disponible, revise su conexión');
+            $dato = \DB::table('enc_ip_servidor')->orderBy('id_ip_servidor', 'asc')->first();
+            return view('formularios.encuestas.form_agregar_ip_server', compact('dato'));
         }
     }
 
     public function cliente_informacion_basica_guardar(){
         $url = 'servicio_informacion_basica_guardar';
+        $datas = \DB::table('enc_productores')->where('activo', 1)->get();
+        // dd($datas);
+        if ($datas != null) {
+            foreach ($datas as $key => $value) {
+                $e = array();
+                $e['object_id'] = $value->object_id;
+                $e['productor_nombres'] = $value->productor_nombres;
+                $e['productor_paterno'] = $value->productor_paterno;
+                $e['productor_materno'] = $value->productor_materno;
+                $e['productor_ci'] = $value->productor_ci;
+                $e['productor_sexo'] = $value->productor_sexo;
+                $e['productor_telefono'] = $value->productor_telefono;
+                $e['tecnico_responsable'] = $value->tecnico_responsable;
+                $e['id_departamento'] = $value->id_departamento;
+                $e['id_provincia'] = $value->id_provincia;
+                $e['id_municipio'] = $value->id_municipio;
+                $e['localidad'] = $value->localidad;
+                $e['comunidad'] = $value->comunidad;
+                $e['tipo_cultivo'] = $value->tipo_cultivo;
+                $e['tipo_cultivo_id'] = $value->tipo_cultivo_id;
+                $e['created_at'] = $value->created_at;
+                $e['updated_at'] = $value->updated_at;
+                $e['activo'] = $value->activo;
+                    // dd(\DB::table('enc_productores')->where('id_preparacion', $value->id_preparacion)->get());
+                if($this->encuestas->guardar_data($e, $url)){
+                    // \DB::table('enc_productores')->where('id_preparacion', $value->id_preparacion)
+                    // ->update(['activo' => 0]);
+                }
+            }
+            // return redirect('/form_cliente_cargar_datos')->with('mensaje_exito', 'Registros de la Tabla Información Básica subidos al servidor Exitosamente');
+        }
+    }
+
+    public function cliente_preparacion_guardar(){
+        $url = 'servicio_preparacion_guardar';
         $datas = \DB::table('enc_preparaciones')->where('activo', 1)->get();
         if (count($datas) > 0) {
             foreach ($datas as $key => $value) {

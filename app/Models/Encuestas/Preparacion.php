@@ -4,7 +4,7 @@ namespace App\Models\Encuestas;
 
 use Illuminate\Database\Eloquent\Model;
 
-class InformacionBasica extends Model
+class Preparacion extends Model
 {
-    protected $table = 'enc_productores';
+    protected $table = 'enc_preparaciones';
 }
